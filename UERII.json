@@ -1,0 +1,19 @@
+{
+  "name": "UERIIList",
+  "timestamp": "2022-03-15T00:00:00Z",
+  "version": {
+    "major": 1,
+    "minor": 0,
+    "patch": 0
+  },
+  "tokens": [
+    {
+      "chainId": 1,
+      "address": "0xc1ABb8c93be6811aFfC70675b0432926c4BFBb5D",
+      "name": "UERII",
+      "symbol": "UERII",
+      "decimals": 18,
+      "logoURI": "https://www.uerii.com/Avatar512.png"
+    }
+  ]
+}
