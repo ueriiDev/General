@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug: Metamask connection test</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+</head>
+<body>
+    <h1>Debug: Metamask connection test</h1>
+    <button onclick="connectToMetamask()">Connect to Metamask</button>
+	<button onclick="checkTokenBalance()">Check Token Balance</button>
+    <p id="status"></p>
+    <p id="address"></p>
+	<p id="balance"></p>
+	<p id="walletAddress"></p>
+    <script>
+        async function connectToMetamask() {
+            if (window.ethereum) {
+                try {
+                    // Request Metamask account authorization
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    document.getElementById('status').textContent = 'Connected to Metamask.';
+                    // Automatic page update in case of account change
+                    window.ethereum.on('accountsChanged', (accounts) => {
+                        document.getElementById('status').textContent = 'Connected to Metamask.';
+                        updateAddress(accounts[0]);
+                    });
+                    // Update of the connected wallet address
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    updateAddress(accounts[0]);
+                } catch (error) {
+                    console.log(error);
+                    document.getElementById('status').textContent = 'Connection to Metamask was not authorized.';
+                }
+            } else {
+                document.getElementById('status').textContent = 'Metamask is not installed or detected.';
+            }
+        }
+
+        function updateAddress(address) {
+            document.getElementById('address').textContent = `Your wallet address ${address}.`;
+			document.getElementById('walletAddress').value = `${address}`;
+        }
+		
+		async function checkTokenBalance() {
+            //Connect to Metamask using web3.js
+            if (window.ethereum) {
+                window.web3 = new Web3(window.ethereum);
+                await window.ethereum.enable();
+            } else if (window.web3) {
+                window.web3 = new Web3(window.web3.currentProvider);
+            } else {
+                console.log('No web3 provider was found.');
+                return;
+            }
+
+            // Initialization of the token contract using only the token address
+            const tokenAddress = '0xc1ABb8c93be6811aFfC70675b0432926c4BFBb5D';
+            const contract = new web3.eth.Contract([
+                { "constant": true, "inputs": [{ "name": "_owner", "type": "address" }], "name": "balanceOf", "outputs": [{ "name": "balance", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" }
+            ], tokenAddress);
+
+            // Calling the balanceOf method of the token contract to obtain the token balance of the specified wallet.
+            const walletAddress = document.getElementById('walletAddress').value;
+            const balance = await contract.methods.balanceOf(walletAddress).call();
+            document.getElementById('balance').textContent = `Balance ${walletAddress}  ${balance} token `;
+        }
+    </script>
+</body>
+</html>
